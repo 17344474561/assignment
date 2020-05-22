@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HelloWorld from '../components/HelloWorld'
-import Updata from '../components/Updata'
 
 Vue.use(VueRouter)
 
@@ -11,11 +10,7 @@ Vue.use(VueRouter)
     name: '/HelloWorld',
     component: HelloWorld
   },
-  {
-      path: '/Updata',
-      name: 'Updata',
-      component: Updata
-  }
+
 ]
 
 const router = new VueRouter({

@@ -2,22 +2,22 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from "axios"
 import qs from "qs"
+
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     tableData:[],
     sear:'',
-    datas:{}
   },
 
  // state 只能在这里改
- //只能改同步代码不能改异步
+ // 只能改同步代码不能改异步
   mutations: {
     //获取初始数据
-     'GET_DATA' ( state , action ) {
-          state.tableData = action
-      },
+    'GET_DATA' ( state , action ) {
+        state.tableData = action
+    },
   },
 
   //异步
@@ -30,9 +30,9 @@ export default new Vuex.Store({
     },
     //添加
     'ADD_DATA' ( stores , obj ) {
-        axios.post("https://api.baxiaobu.com/index.php/home/v5/add", qs.stringify( obj ))
+        axios.post("https://api.baxiaobu.com/index.php/home/v5/add" ,
+           qs.stringify( obj ))
           .then(res => {
-            console.log(res)
             if (res.data.status == 200) {
               stores.dispatch('ACTION_DATA')
             }
@@ -40,10 +40,20 @@ export default new Vuex.Store({
     },
     //删除
     'ACTION_DEL_DATA' ( stores , del ) {
-      console.log(del.id)
-        axios.post("https://api.baxiaobu.com/index.php/home/v5/deleteUser", qs.stringify({ id: del.id }))
+        axios.post("https://api.baxiaobu.com/index.php/home/v5/deleteUser" , 
+            qs.stringify({ id: del.id }))
+            .then(res => {
+            if (res.data.status == 200) {
+              stores.dispatch('ACTION_DATA')
+            }
+        })
+    },
+
+    //修改
+    ACTION_UPDATA ( stores , data ) {
+        axios.post("https://api.baxiaobu.com/index.php/home/v5/updateUser",
+          qs.stringify(data))
           .then(res => {
-            console.log(res)
             if (res.data.status == 200) {
               stores.dispatch('ACTION_DATA')
             }
@@ -51,13 +61,4 @@ export default new Vuex.Store({
     }
     
   },
-  getters: {
-    // allData: state => state.data,
-    // upData: state => state.datas,
-    // searData: state => state.data.filter(v => {
-    //   return v.name.includes(state.sear)
-    // }),
-  },
-  modules: {
-  }
 })
