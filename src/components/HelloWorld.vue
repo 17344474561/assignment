@@ -1,60 +1,107 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-router" target="_blank" rel="noopener">router</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-vuex" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+      <Add/>
+      <template>
+        <el-table
+          :data="tableData.filter( 
+            data => !search || data.name.toLowerCase().includes(
+              search.toLowerCase()
+            ))"
+          style="width: 100%">
+        <el-table-column label="ID" prop="id"> </el-table-column>
+        <el-table-column label="Name" prop="name"> </el-table-column>
+        <el-table-column label="Age"  prop="age"> </el-table-column>
+        <el-table-column label="Gender" prop="gender"> </el-table-column>
+        <el-table-column label="Msg" prop="msg"> </el-table-column>
+        <el-table-column label="Hospital" prop="hospital"> </el-table-column>
+        <el-table-column align="right">
+          <template slot="header">
+            <el-input
+              v-model="search"
+              size="mini"
+              placeholder="输入关键字搜索"/>
+          </template>
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+            <el-button
+              size="mini"
+              type="danger"
+              @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </template>
+    
   </div>
 </template>
 
 <script>
+import Add from "../views/Add"
+import { mapState , mapActions} from "vuex"
+import axios from "axios"
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
+  data () {
+    return {
+      tableData:[],
+      search: ''
+    }
+    
+  },
+  methods: {  
+      ...mapActions([
+         'ACTION_DATA',
+      ]),
+      sear () {
+          this.tableDatav = this.$store.getters.searData
+      },
+      handleEdit(index, row) {
+         this.$router.push({
+           path:"/Updata",
+           params:"row"
+         })
+         this.$store.commit('UPDATA')
+        console.log(index, row);
+      },
+      handleDelete(index, row) {
+         this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+          center: true
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '删除成功!',
+          });
+          this.$store.commit("DEL_DATA",row)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        })
+      },
+     
+  },
+  watch:{
+      search (value) {
+          this.$store.commit( "SEARCH_DATA" , value )
+      },
+  },
+  computed:{ ...mapState(['data'])},
+  created () {
+      axios.get("https://api.baxiaobu.com/index.php/home/v5/getuser")
+        .then(res => {
+          this.$store.commit("GET_DATA",res.data.users)
+          this.tableData = this.$store.getters.allData
+      })
+  },
+  components: {
+    Add
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
 </style>
