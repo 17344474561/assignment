@@ -15,21 +15,21 @@ export default new Vuex.Store({
  // 只能改同步代码不能改异步
   mutations: {
     //获取初始数据
-    'GET_DATA' ( state , action ) {
+    GET_DATA ( state , action ) {
         state.tableData = action
     },
   },
 
   //异步
   actions: {
-    'ACTION_DATA' ( { commit } ) {
+    ACTION_DATA ( { commit } ) {
         axios.get("https://api.baxiaobu.com/index.php/home/v5/getuser")
           .then(res => {
-            commit("GET_DATA",res.data.users)
+            commit( "GET_DATA" , res.data.users)
         })
     },
     //添加
-    'ADD_DATA' ( stores , obj ) {
+    ADD_DATA ( stores , obj ) {
         axios.post("https://api.baxiaobu.com/index.php/home/v5/add" ,
            qs.stringify( obj ))
           .then(res => {
@@ -39,7 +39,7 @@ export default new Vuex.Store({
         })
     },
     //删除
-    'ACTION_DEL_DATA' ( stores , del ) {
+    ACTION_DEL_DATA ( stores , del ) {
         axios.post("https://api.baxiaobu.com/index.php/home/v5/deleteUser" , 
             qs.stringify({ id: del.id }))
             .then(res => {

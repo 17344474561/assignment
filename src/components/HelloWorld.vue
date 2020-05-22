@@ -67,7 +67,6 @@ export default {
   data () {
     return {
       search: '',
-      dialogFormVisible: false,
       form: { 
         id:'' , 
         name:'' ,
@@ -76,7 +75,8 @@ export default {
         msg:'' , 
         hospital:'' 
       },
-      formLabelWidth: '120px'
+      dialogFormVisible: false,
+      formLabelWidth: '120px',
     }
   },
   methods: {  
@@ -86,12 +86,10 @@ export default {
           this.dialogFormVisible = false
       },
       //回显
-      handleEdit(index, row) {
+      handleEdit( index , row ) {
           this.dialogFormVisible = true
-          this.form.id = row.id
-          this.form.name = row.name
-          this.form.age = row.age
-          this.form.gender = row.gender
+          Object.assign( this.form , row);
+
       },
       //删除
       handleDelete(index, row) {
@@ -105,7 +103,7 @@ export default {
             type: 'success',
             message: '删除成功!',
           });
-          this.$store.dispatch("ACTION_DEL_DATA",row)
+          this.$store.dispatch("ACTION_DEL_DATA", row )
       }).catch(() => {
           this.$message({
             type: 'info',
