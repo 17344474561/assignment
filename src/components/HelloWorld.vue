@@ -14,13 +14,13 @@
         <el-table-column label="Gender" prop="gender"> </el-table-column>
         <el-table-column label="Msg" prop="msg"> </el-table-column>
         <el-table-column label="Hospital" prop="hospital"> </el-table-column>
-        <el-table-column align="right">
-          <template slot="header">
-            <el-input
-              v-model="search"
-              size="mini"
-              placeholder="输入关键字搜索"/>
-          </template>
+           <el-table-column
+            align="right">
+            <template slot="header">
+              <el-input
+                v-model="search"
+                placeholder="输入关键字搜索"/>
+            </template>
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -33,35 +33,35 @@
         </el-table-column>
       </el-table>
     </template>
+    <!-- <Updata :style=" isVisible ? styleObject : baseStyles"/> -->
+    <div :class="baseStyles">
+       1111
+      <Updata />
+    </div>
     
   </div>
 </template>
 
 <script>
-import Add from "../views/Add"
-import { mapState , mapActions} from "vuex"
-import axios from "axios"
+
+import Add from '../views/Add'
+import Updata from '../components/Updata'
+import { mapState } from 'vuex'
+import './style.less'
+
 export default {
   data () {
     return {
-      tableData:[],
-      search: ''
+      search: '',
+      isVisible:false,
     }
-    
   },
   methods: {  
-      ...mapActions([
-         'ACTION_DATA',
-      ]),
-      sear () {
-          this.tableDatav = this.$store.getters.searData
-      },
+      // ...mapActions([
+      //    'ACTION_DATA',
+      // ]),
       handleEdit(index, row) {
-         this.$router.push({
-           path:"/Updata",
-           params:"row"
-         })
-         this.$store.commit('UPDATA')
+         
         console.log(index, row);
       },
       handleDelete(index, row) {
@@ -75,7 +75,7 @@ export default {
             type: 'success',
             message: '删除成功!',
           });
-          this.$store.commit("DEL_DATA",row)
+          this.$store.dispatch("ACTION_DEL_DATA",row)
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -86,20 +86,15 @@ export default {
      
   },
   watch:{
-      search (value) {
-          this.$store.commit( "SEARCH_DATA" , value )
-      },
+
   },
-  computed:{ ...mapState(['data'])},
+  computed:{ ...mapState(['tableData']) },
   created () {
-      axios.get("https://api.baxiaobu.com/index.php/home/v5/getuser")
-        .then(res => {
-          this.$store.commit("GET_DATA",res.data.users)
-          this.tableData = this.$store.getters.allData
-      })
+      this.$store.dispatch('ACTION_DATA')
   },
   components: {
-    Add
+    Add,
+    Updata
   }
 }
 </script>

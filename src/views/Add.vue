@@ -106,7 +106,9 @@ export default {
      methods: {
 
        addData () {
-         console.log(this.ruleForm)
+          this.dialogVisible = false,
+          console.log(this.ruleForm)
+          this.$store.dispatch('ADD_DATA' , this.ruleForm)
        }
      
   },
